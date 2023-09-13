@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "tihclient"
 dynamic = ["version"]
-description = ''
+description = 'TIH api client'
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
-keywords = []
+keywords = ["tih", "api", "client", "python", "pandas", "dataframe", "data"]
 authors = [
   { name = "Teck Meng", email = "furyx@hotmail.com" },
 ]
@@ -23,9 +23,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/unknown/tihclient#readme"
-Issues = "https://github.com/unknown/tihclient/issues"
-Source = "https://github.com/unknown/tihclient"
+Documentation = "https://github.com/furyhawk/tihclient#readme"
+Issues = "https://github.com/furyhawk/tihclient/issues"
+Source = "https://github.com/furyhawk/tihclient"
 
 [tool.hatch.version]
 path = "src/tihclient/__about__.py"
