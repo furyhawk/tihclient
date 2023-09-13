@@ -27,7 +27,7 @@ https://tih-dev.stb.gov.sg/content-api/apis
 
 environment variable
 ```
-STB_API_KEY=xxx
+TIH_API_KEY=xxx
 ```
 
 ## License

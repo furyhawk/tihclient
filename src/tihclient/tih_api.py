@@ -1,4 +1,4 @@
-# STB API client
+# TIH API client
 
 import os
 from typing import Any, Dict, Optional, Type, Unpack
@@ -29,8 +29,8 @@ from apiclient.request_strategies import (
 from apiclient.utils.typing import OptionalJsonType
 from apiclient.error_handlers import BaseErrorHandler, ErrorHandler
 
-API_KEY: str | None = os.environ.get("STB_API_KEY")
-assert API_KEY is not None, "Please set the STB_API_KEY environment variable"
+API_KEY: str | None = os.environ.get("TIH_API_KEY")
+assert API_KEY is not None, "Please set the TIH_API_KEY environment variable"
 
 from tihclient.base import BaseClient
 
@@ -65,7 +65,7 @@ def get_next_page(response: Response, *_) -> Response:
 # Define endpoints, using the provided decorator.
 @endpoint(base_url="https://api.stb.gov.sg/content")
 class Endpoint:
-    """STB API endpoints"""
+    """TIH API endpoints"""
 
     accommodation: str = "accommodation/v2/search"
     attractions: str = "attractions/v2/search"
@@ -88,7 +88,7 @@ class Endpoint:
 # Define endpoints, using the provided decorator.
 @endpoint(base_url="https://api.stb.gov.sg/services/navigation/v2")
 class MapEndpoint:
-    """STB API endpoints"""
+    """TIH API endpoints"""
 
     autocomplete: str = "autocomplete"
     place_details: str = "places/{uuid}"
@@ -96,7 +96,7 @@ class MapEndpoint:
     experiential_route: str = "experiential-route/{transport-mode}"
 
 
-class STBResponseHandler(BaseResponseHandler):
+class TIHResponseHandler(BaseResponseHandler):
     """Attempt to return the decoded response data as json."""
 
     @staticmethod
@@ -142,20 +142,20 @@ class DataframeResponseHandler(BaseResponseHandler):
         return json_normalize(response_json["data"])
 
 
-class STBClient(BaseClient):
-    """STB API client"""
+class TIHClient(BaseClient):
+    """TIH API client"""
 
     def __init__(
         self,
         authentication_method: Optional[
             BaseAuthenticationMethod
         ] = authentication_method,
-        response_handler: Type[BaseResponseHandler] = STBResponseHandler,
+        response_handler: Type[BaseResponseHandler] = TIHResponseHandler,
         request_formatter: Type[BaseRequestFormatter] = JsonRequestFormatter,
         error_handler: Type[BaseErrorHandler] = ErrorHandler,
         request_strategy: Optional[BaseRequestStrategy] = None,
     ) -> None:
-        """Initialize STB API client"""
+        """Initialize TIH API client"""
         self.authentication_method = authentication_method
         self.endpoint = Endpoint
         self.mapendpoint = MapEndpoint
@@ -172,7 +172,7 @@ class STBClient(BaseClient):
     def get_accommodation(
         self, keyword: str, **kwargs: Unpack[Any]
     ) -> DataFrame | None:
-        """Get accommodation from STB API"""
+        """Get accommodation from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response_json: Any = self.get(
@@ -190,7 +190,7 @@ class STBClient(BaseClient):
     @paginated(by_query_params=get_next_page)
     @retry_request
     def get_attractions(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get accommodation from STB API"""
+        """Get accommodation from TIH API"""
         if keyword == "":
             return None
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
@@ -206,7 +206,7 @@ class STBClient(BaseClient):
 
     @retry_request
     def get_bar_clubs(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get bars and clubs from STB API"""
+        """Get bars and clubs from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response: Any = self.get(endpoint=self.endpoint.bars_clubs, params=params)
@@ -215,7 +215,7 @@ class STBClient(BaseClient):
 
     @retry_request
     def get_cruises(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get cruises from STB API"""
+        """Get cruises from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response: Any = self.get(endpoint=self.endpoint.cruises, params=params)
@@ -224,7 +224,7 @@ class STBClient(BaseClient):
 
     @retry_request
     def get_events(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get events from STB API"""
+        """Get events from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response: Any = self.get(endpoint=self.endpoint.events, params=params)
@@ -235,7 +235,7 @@ class STBClient(BaseClient):
     def get_food_beverages(
         self, keyword: str, **kwargs: Unpack[Any]
     ) -> DataFrame | None:
-        """Get food and beverages from STB API"""
+        """Get food and beverages from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response: Any = self.get(endpoint=self.endpoint.food_beverages, params=params)
@@ -244,7 +244,7 @@ class STBClient(BaseClient):
 
     @retry_request
     def get_precincts(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get precincts from STB API"""
+        """Get precincts from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response: Any = self.get(endpoint=self.endpoint.precincts, params=params)
@@ -253,7 +253,7 @@ class STBClient(BaseClient):
 
     @retry_request
     def get_shops(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get shops from STB API"""
+        """Get shops from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response: Any = self.get(endpoint=self.endpoint.shops, params=params)
@@ -263,7 +263,7 @@ class STBClient(BaseClient):
     @paginated(by_query_params=get_next_page)
     @retry_request
     def get_tours(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get tours from STB API"""
+        """Get tours from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response_json: Any = self.get(endpoint=self.endpoint.tours, params=params)
@@ -279,7 +279,7 @@ class STBClient(BaseClient):
     @paginated(by_query_params=get_next_page)
     @retry_request
     def get_venues(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
-        """Get venues from STB API"""
+        """Get venues from TIH API"""
         if keyword == "":
             return None
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
@@ -298,7 +298,7 @@ class STBClient(BaseClient):
     def get_walking_trails(
         self, keyword: str, **kwargs: Unpack[Any]
     ) -> DataFrame | None:
-        """Get walking trails from STB API"""
+        """Get walking trails from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
         response: Any = self.get(endpoint=self.endpoint.walking_trails, params=params)
@@ -310,7 +310,7 @@ class STBClient(BaseClient):
     def search_map_details(
         self, location: str, radius: int, **kwargs: Unpack[Any]
     ) -> DataFrame | None:
-        """Search map details from STB API"""
+        """Search map details from TIH API"""
         params: Dict[str, int] = {"location": location, "radius": radius}
         params.update(kwargs)
         response: Any = self.get(
