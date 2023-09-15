@@ -34,7 +34,7 @@ assert API_KEY is not None, "Please set the TIH_API_KEY environment variable"
 
 from tihclient.base import BaseClient
 
-authentication_method = HeaderAuthentication(
+AUTHENTICATION_METHOD = HeaderAuthentication(
     token=API_KEY,
     parameter="x-api-key",
     scheme=None,
@@ -139,7 +139,16 @@ class DataframeResponseHandler(BaseResponseHandler):
         # check if attribute "data" exists
         if "data" not in response_json:
             return None
-        return json_normalize(response_json["data"])
+        # Concatenate the dataframes
+        # for page in response_json:
+        #     print(page)
+        #     if response_json.index(page) == 0:
+        #         df = json_normalize(page["data"])
+        #     else:
+        #         df = concat([df, json_normalize(page["data"])], ignore_index=True)
+        df = json_normalize(response_json["data"])
+        return df
+        # return json_normalize(response_json["data"])
 
 
 class TIHClient(BaseClient):
@@ -147,9 +156,7 @@ class TIHClient(BaseClient):
 
     def __init__(
         self,
-        authentication_method: Optional[
-            BaseAuthenticationMethod
-        ] = authentication_method,
+        authentication_method: Optional[BaseAuthenticationMethod] = AUTHENTICATION_METHOD,
         response_handler: Type[BaseResponseHandler] = TIHResponseHandler,
         request_formatter: Type[BaseRequestFormatter] = JsonRequestFormatter,
         error_handler: Type[BaseErrorHandler] = ErrorHandler,
@@ -160,32 +167,21 @@ class TIHClient(BaseClient):
         self.endpoint = Endpoint
         self.mapendpoint = MapEndpoint
         super().__init__(
-            authentication_method=self.authentication_method,
+            authentication_method=authentication_method,
             response_handler=response_handler,
             request_formatter=request_formatter,
             error_handler=error_handler,
             request_strategy=request_strategy,
         )
 
-    @paginated(by_query_params=get_next_page)
     @retry_request
-    def get_accommodation(
-        self, keyword: str, **kwargs: Unpack[Any]
-    ) -> DataFrame | None:
+    def get_accommodation(self, keyword: str, **kwargs: Unpack[Any]) -> Any:
         """Get accommodation from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
-        response_json: Any = self.get(
-            endpoint=self.endpoint.accommodation, params=params
-        )
+        response_json: Any = self.get(endpoint=self.endpoint.accommodation, params=params)
 
-        # Concatenate the dataframes
-        for page in response_json:
-            if response_json.index(page) == 0:
-                df = json_normalize(page["data"])
-            else:
-                df = concat([df, json_normalize(page["data"])], ignore_index=True)
-        return df
+        return response_json
 
     @paginated(by_query_params=get_next_page)
     @retry_request
@@ -232,9 +228,7 @@ class TIHClient(BaseClient):
         return response
 
     @retry_request
-    def get_food_beverages(
-        self, keyword: str, **kwargs: Unpack[Any]
-    ) -> DataFrame | None:
+    def get_food_beverages(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
         """Get food and beverages from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
@@ -295,9 +289,7 @@ class TIHClient(BaseClient):
         return df
 
     @retry_request
-    def get_walking_trails(
-        self, keyword: str, **kwargs: Unpack[Any]
-    ) -> DataFrame | None:
+    def get_walking_trails(self, keyword: str, **kwargs: Unpack[Any]) -> DataFrame | None:
         """Get walking trails from TIH API"""
         params: Dict[str, str] = {"searchType": "keyword", "searchValues": keyword}
         params.update(kwargs)
@@ -307,14 +299,10 @@ class TIHClient(BaseClient):
 
     @paginated(by_query_params=get_next_page)
     @retry_request
-    def search_map_details(
-        self, location: str, radius: int, **kwargs: Unpack[Any]
-    ) -> DataFrame | None:
+    def search_map_details(self, location: str, radius: int, **kwargs: Unpack[Any]) -> DataFrame | None:
         """Search map details from TIH API"""
         params: Dict[str, int] = {"location": location, "radius": radius}
         params.update(kwargs)
-        response: Any = self.get(
-            endpoint=self.mapendpoint.search_map_details, params=params
-        )
+        response: Any = self.get(endpoint=self.mapendpoint.search_map_details, params=params)
 
         return response

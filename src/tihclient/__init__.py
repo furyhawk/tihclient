@@ -2,5 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 from tihclient.tih_api import TIHClient
+from tihclient.tih_api import DataframeResponseHandler
 
-__all__ = ['TIHClient']
+__all__ = ['TIHClient', 'DataframeResponseHandler']
